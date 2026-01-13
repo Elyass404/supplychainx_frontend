@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './core/auth/auth';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet], // 🟢 Import RouterOutlet so the HTML tag works
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App  {
   
 }
