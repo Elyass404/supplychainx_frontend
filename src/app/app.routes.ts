@@ -2,27 +2,26 @@ import { Routes } from '@angular/router';
 import { AppLayout } from './core/layout/app-layout/app-layout';
 import { Login } from './features/auth/login';
 import { authGuard } from './core/guards/auth.guard'; 
+import { PROCUREMENT_ROUTES } from './features/procurement/procurement.routes'; 
 
 export const routes: Routes = [
-  // Public Route: Login
-  {
-    path: 'login',
-    component: Login
-  },
+  { path: 'login', component: Login },
 
-  // Secured Routes (Protected by Guard)
   {
     path: '',
     component: AppLayout,
-    canActivate: [authGuard], // the bouncer
+    canActivate: [authGuard],
     children: [
-      // If we go to localhost:4200, redirect to suppliers
+      // 1. Dashboard Default Redirect
       { path: '', redirectTo: 'procurement/suppliers', pathMatch: 'full' },
-      
-      //we will make other routes here...
+
+      // "If the URL starts with /procurement, go look at the procurement.routes.ts file"
+      {
+        path: 'procurement',
+        loadChildren: () => import('./features/procurement/procurement.routes').then(m => m.PROCUREMENT_ROUTES)
+      }
     ]
   },
 
-  // 3. Catch-all
   { path: '**', redirectTo: 'login' }
 ];
