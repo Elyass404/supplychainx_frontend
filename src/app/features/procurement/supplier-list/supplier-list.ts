@@ -46,4 +46,25 @@ export class SupplierList implements OnInit {
       }
     });
   }
+
+  onDelete(supplier: Supplier) {
+    // dia
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${supplier.name}?`);
+    
+    if (confirmDelete) {
+      // 2. Call Service
+      this.supplierService.deleteSupplier(supplier.id).subscribe({
+        next: () => {
+          console.log('Deleted successfully');
+          // 3. Refresh the list to remove the deleted item
+          this.loadSuppliers(); 
+        },
+        error: (err) => {
+          console.error('Delete failed', err);
+          // 4. Handle Business Rule Error (e.g., Cannot delete because of active orders)
+          alert('❌ Cannot delete: ' + (err.error?.message || 'Server error'));
+        }
+      });
+    }
+  }
 }
