@@ -18,10 +18,11 @@ export class AuthService {
       issuer: 'http://localhost:8081/realms/supplychain-realm',
       clientId: 'supplychain-frontend',
       redirectUri: window.location.origin,
-      scope: 'openid profile email',
+      scope: 'openid profile email offline_access',
       responseType: 'code',
       requireHttps: false,
       showDebugInformation: true,
+      clearHashAfterLogin: true
     };
 
     this.oauthService.configure(authConfig);

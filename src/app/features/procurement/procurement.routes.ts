@@ -13,6 +13,11 @@ export const PROCUREMENT_ROUTES: Routes = [
     path: 'suppliers',
     component: SupplierList
   },
+
+  {
+    path: 'suppliers/:id/edit',
+    component: SupplierForm
+  },
   
   // Default: If they just go to /procurement, redirect to suppliers
   {

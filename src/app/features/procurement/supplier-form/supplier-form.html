@@ -1,8 +1,14 @@
 <div class="max-w-2xl mx-auto space-y-6">
   
   <div>
-    <h2 class="text-2xl font-bold text-slate-800">New Supplier</h2>
-    <p class="text-slate-500">Add a new partner to your supply chain.</p>
+    <div>
+    <h2 class="text-2xl font-bold text-slate-800">
+      {{ isEditMode() ? 'Edit Supplier' : 'New Supplier' }}
+    </h2>
+    <p class="text-slate-500">
+      {{ isEditMode() ? 'Update partner details.' : 'Add a new partner to your supply chain.' }}
+    </p>
+  </div>
   </div>
 
   @if (errorMessage()) {
@@ -56,14 +62,11 @@
         Cancel
       </a>
 
-      <button type="submit" 
-              [disabled]="form.invalid || isSubmitting()"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
-        
+      <button type="submit" ... >
         @if (isSubmitting()) {
           <span>Saving...</span>
         } @else {
-          <span>Create Supplier</span>
+          <span>{{ isEditMode() ? 'Update Supplier' : 'Create Supplier' }}</span>
         }
       </button>
     </div>
