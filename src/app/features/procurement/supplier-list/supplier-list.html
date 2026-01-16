@@ -61,7 +61,17 @@
             </td>
             <td class="p-4">{{ supplier.leadTime }} days</td>
             <td class="p-4 text-right">
-              <button class="text-slate-400 hover:text-blue-600 font-medium">Edit</button>
+              
+              <a [routerLink]="['/procurement/suppliers', supplier.id, 'edit']" 
+                 class="text-slate-400 hover:text-blue-600 font-medium transition cursor-pointer">
+                Edit
+              </a>
+
+              <button (click)="onDelete(supplier)" 
+                      class="text-slate-400 hover:text-red-600 font-medium transition">
+                Delete
+              </button>
+
             </td>
           </tr>
         }
