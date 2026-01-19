@@ -30,7 +30,7 @@ private apiUrl = `${enviroment.apiUrl}/raw-materials`;
   return this.http.post<RawMaterial>(`${this.apiUrl}`,material)
  }
 
- //partial
+ 
 
 
 
