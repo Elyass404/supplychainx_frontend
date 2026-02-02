@@ -13,7 +13,7 @@ private http  = inject(HttpClient);
 private apiUrl = `${enviroment.apiUrl}/raw-materials`;
 
 //to get all the raw materials
- getAll(page: number = 0, size: number = 10 ): Observable<RawMaterial>{
+ getAll(page: number = 0, size: number = 10 ): Observable<RawMaterial[]>{
   const params = new HttpParams()
   .set('page', page)
   .set('size', size)
