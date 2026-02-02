@@ -1,1 +1,100 @@
-<p>raw-material-list works!</p>
+<div class="space-y-6">
+
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-800">Raw Materials</h2>
+      <p class="text-slate-500">Inventory and stock levels</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button (click)="toggleFilter()" 
+              class="flex items-center gap-2 px-4 py-2 rounded-lg border transition select-none"
+              [class.bg-red-50]="showCriticalOnly()"
+              [class.border-red-200]="showCriticalOnly()"
+              [class.text-red-700]="showCriticalOnly()"
+              [class.bg-white]="!showCriticalOnly()"
+              [class.text-slate-600]="!showCriticalOnly()">
+        <span class="text-lg">{{ showCriticalOnly() ? '🔴' : '⚪' }}</span>
+        <span class="font-medium">Critical Stock Only</span>
+      </button>
+
+      <button routerLink="/procurement/raw-materials/new" 
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm">
+        <span>+ Add Material</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      
+      <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+        <tr>
+          <th class="p-4">Material Name</th>
+          <th class="p-4">Stock Level</th>
+          <th class="p-4">Status</th>
+          <th class="p-4 text-right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+        
+        @if (isLoading()) {
+          <tr><td colspan="4" class="p-8 text-center text-slate-400">Loading ni the main thein int e^xfdlhsdglujsdkhsdkghkghgghei</td></tr>
+        }
+
+        @if (!isLoading() && filteredMaterials().length === 0) {
+          <tr>
+            <td colspan="4" class="p-8 text-center text-slate-400">
+              {{ showCriticalOnly() ? 'No critical items found! 🎉' : 'No materials found.' }}
+            </td>
+          </tr>
+        }
+
+        @for (item of filteredMaterials(); track item.id) {
+          <tr class="hover:bg-slate-50 transition">
+            
+            <td class="p-4">
+              <div class="font-medium text-slate-900">{{ item.name }}</div>
+              <div class="text-xs text-slate-400 font-mono">ID: {{ item.id }}</div>
+            </td>
+
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <span class="font-bold">{{ item.stock }}</span>
+                <span class="text-slate-400 text-xs">{{ item.unit }}</span>
+              </div>
+              
+              <div class="w-24 h-1.5 bg-slate-100 rounded-full mt-1 overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500"
+                     [style.width.%]="(item.stock / (item.stockMin * 2)) * 100"
+                     [class.bg-red-500]="item.stock < item.stockMin"
+                     [class.bg-emerald-500]="item.stock >= item.stockMin">
+                </div>
+              </div>
+            </td>
+
+            <td class="p-4">
+              @if (item.stock < item.stockMin) {
+                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
+                  ⚠️ Critical (Min: {{ item.stockMin }})
+                </span>
+              } @else {
+                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                  ✅ In Stock 
+                </span>
+              }
+            </td>
+
+            <td class="p-4 text-right">
+              <button class="text-slate-400 hover:text-blue-600 font-medium transition mr-3">Edit</button>
+              <button class="text-slate-400 hover:text-red-600 font-medium transition">Delete</button>
+            </td>
+
+          </tr>
+        }
+
+      </tbody>
+    </table>
+  </div>
+</div>
