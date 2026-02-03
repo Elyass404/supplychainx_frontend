@@ -87,8 +87,14 @@
             </td>
 
             <td class="p-4 text-right">
-              <button class="text-slate-400 hover:text-blue-600 font-medium transition mr-3">Edit</button>
-              <button class="text-slate-400 hover:text-red-600 font-medium transition">Delete</button>
+              <button [routerLink]="['/procurement/raw-materials', item.id, 'edit']" 
+                      class="text-slate-400 hover:text-blue-600 font-medium transition mr-3">
+                Edit
+              </button>
+                <button (click)="onDelete(item)"
+                      class="text-slate-400 hover:text-red-600 font-medium transition">
+                Delete
+              </button>
             </td>
 
           </tr>
