@@ -1,0 +1,99 @@
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-800">Production Orders</h2>
+      <p class="text-slate-500">Manage manufacturing process</p>
+    </div>
+    
+    <button routerLink="/production/orders/new" 
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition shadow-sm">
+      <span>+ New Order</span>
+    </button>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      
+      <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+        <tr>
+          <th class="p-4">Order ID</th>
+          <th class="p-4">Product</th>
+          <th class="p-4">Quantity</th>
+          <th class="p-4">Date</th>
+          <th class="p-4">Status</th>
+          <th class="p-4 text-right">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+        
+        @if (isLoading()) {
+          <tr><td colspan="6" class="p-8 text-center text-slate-400">Loading orders...</td></tr>
+        }
+
+        @if (!isLoading() && orders().length === 0) {
+          <tr><td colspan="6" class="p-8 text-center text-slate-400">No active production orders.</td></tr>
+        }
+
+        @for (order of orders(); track order.id) {
+          <tr class="hover:bg-slate-50 transition">
+            
+            <td class="p-4 font-mono text-slate-500">#{{ order.id }}</td>
+            
+            <td class="p-4 font-medium text-slate-900">{{ order.product.name}}</td>
+            
+            <td class="p-4">{{ order.quantity }} units</td>
+            
+            <td class="p-4 text-slate-500">{{ order.startDate }}</td>
+
+            <td class="p-4">
+              <span [class]="'px-2 py-1 rounded-full text-xs font-bold border ' + getStatusColor(order.status)">
+                {{ order.status }}
+              </span>
+            </td>
+
+            <td class="p-4 text-right flex justify-end gap-2">
+              
+              @if (order.status === 'PENDING') {
+                <button (click)="onStart(order)" 
+                        title="Start Production"
+                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition border border-transparent hover:border-blue-100">
+                  <span class="font-bold text-xs uppercase">Start</span>
+                </button>
+                
+                <button (click)="onCancel(order)" 
+                        title="Cancel Order"
+                        class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition border border-transparent hover:border-red-100">
+                  <span class="font-bold text-xs uppercase">Cancel</span>
+                </button>
+              }
+
+              @if (order.status === 'IN_PRODUCTION') {
+                <button (click)="onComplete(order)" 
+                        class="px-3 py-1 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 rounded-md transition font-medium text-xs shadow-sm">
+                  ✓ Complete
+                </button>
+              }
+
+              @if (order.status === 'BLOCKED') {
+                <span class="text-xs text-red-500 font-bold px-2">⛔ Shortage</span>
+                }
+
+              @if (order.status === 'COMPLETED') {
+                <span class="text-slate-300 text-xs">Archived</span>
+              }
+              
+              @if (order.status === 'CANCELLED') {
+                <span class="text-slate-300 text-xs line-through">Void</span>
+              }
+
+            </td>
+
+          </tr>
+        }
+
+      </tbody>
+    </table>
+  </div>
+</div>
