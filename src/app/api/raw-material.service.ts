@@ -32,7 +32,7 @@ private apiUrl = `${enviroment.apiUrl}/raw-materials`;
 
  //to update an existing raw material 
  update(id: number, material: Partial<RawMaterial>): Observable<RawMaterial>{
-  return this.http.put<RawMaterial>(`${this.apiUrl}/raw-materials/${id}`, material)
+  return this.http.put<RawMaterial>(`${this.apiUrl}/${id}`, material)
  }
 
  //to delete the raw material

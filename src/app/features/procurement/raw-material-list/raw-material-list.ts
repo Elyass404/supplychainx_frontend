@@ -94,5 +94,3 @@ export class RawMaterialList implements OnInit {
     }
   }
 }
-
-//
