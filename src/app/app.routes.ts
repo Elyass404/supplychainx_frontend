@@ -23,13 +23,20 @@ export const routes: Routes = [
         path: 'procurement',
         loadChildren: () => import('./features/procurement/procurement.routes').then(m => m.PROCUREMENT_ROUTES)
       },
-      
+
       //if the the path starts with production, then look in the productin routes
       {
         path: 'production',
         loadChildren: () => import('./features/production/production.routes')
           .then(m => m.PRODUCTION_ROUTES)
       },
+
+      //if the url starts with delivery: 
+      {
+        path: 'delivery',
+        loadChildren: () => import('./features/delivery/delivery.routes')
+        .then(m => m.DELIVERY_ROUTES)
+},
     ]
   },
 
