@@ -1,8 +1,12 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { CustomerService } from '../../../api/customer.service';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+
+import * as CustomerActions from '../store/customer.actions';
+//  Import selectError to catch API failures
+import { selectAllCustomers, selectError } from '../store/customer.selectors'; 
 
 @Component({
   selector: 'app-customer-form',
@@ -14,10 +18,8 @@ import { CustomerService } from '../../../api/customer.service';
 export class CustomerForm implements OnInit {
   
   private fb = inject(FormBuilder);
-  private customerService = inject(CustomerService);
-  private router = inject(Router);
-  // We use route to check if we are in "Edit Mode" (do we have an ID?)
-  private route = inject(ActivatedRoute); 
+  private store = inject(Store);
+  private route = inject(ActivatedRoute);
 
   form: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -25,64 +27,56 @@ export class CustomerForm implements OnInit {
     city: ['', Validators.required]
   });
 
-  isSubmitting = signal(false);
   isEditMode = signal(false);
   currentId: number | null = null;
-  errorMessage = signal<string | null>(null);
+
+  // Connect to the Store's error selector
+  private errorState = this.store.selectSignal(selectError);
+
+  // Compute the specific message for the HTML
+  errorMessage = computed(() => {
+    const err = this.errorState();
+    // Only show error if it happened during CREATE or UPDATE (ignore unrelated errors)
+    if (err && (err.operation === 'CREATE' || err.operation === 'UPDATE')) {
+      return err.message;
+    }
+    return null;
+  });
 
   ngOnInit() {
-    // Check URL for ID (e.g. /customers/5/edit)
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
       this.currentId = Number(id);
-      this.loadData(this.currentId);
+      this.loadDataFromStore(this.currentId);
     }
   }
 
-  loadData(id: number) {
-    this.form.disable();
-    // We assume the list view passed the data, but it's safer to fetch by ID if your backend supports it.
-    // If your backend doesn't have GET /{id}, we might need to rely on the list or add that endpoint.
-    // Based on your controller, you DO have @GetMapping("/{id}"), so this is perfect.
-    this.customerService.getAll().subscribe({
-        next: (customers) => {
-            const found = customers.find(c => c.id === id);
-            if(found) {
-                this.form.patchValue(found);
-            }
-            this.form.enable();
-        }, 
-        error: () => {
-             this.errorMessage.set('Could not find customer.');
-             this.form.enable();
-        }
-    });
-    // Note: Ideally call getById(id) if you added it to service, but getAll() works for small lists.
+  loadDataFromStore(id: number) {
+    const customers = this.store.selectSignal(selectAllCustomers)();
+    const found = customers.find(c => c.id === id);
+
+    if (found) {
+      this.form.patchValue(found);
+    } else {
+      this.store.dispatch(CustomerActions.loadCustomers());
+    }
   }
 
   onSubmit() {
     if (this.form.invalid) return;
 
-    this.isSubmitting.set(true);
-    const data = this.form.value;
+    const customerData = this.form.value;
 
     if (this.isEditMode() && this.currentId) {
-      this.customerService.update(this.currentId, data).subscribe({
-        next: () => this.router.navigate(['/delivery/customers']),
-        error: (err) => this.handleError(err)
-      });
+      this.store.dispatch(CustomerActions.updateCustomer({ 
+        id: this.currentId, 
+        customer: customerData 
+      }));
     } else {
-      this.customerService.create(data).subscribe({
-        next: () => this.router.navigate(['/delivery/customers']),
-        error: (err) => this.handleError(err)
-      });
+      this.store.dispatch(CustomerActions.createCustomer({ 
+        customer: customerData 
+      }));
     }
-  }
-
-  private handleError(err: any) {
-    console.error(err);
-    this.errorMessage.set('Operation failed.');
-    this.isSubmitting.set(false);
   }
 }

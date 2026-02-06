@@ -1,7 +1,14 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CustomerService } from '../../../api/customer.service';
+import { Store } from '@ngrx/store';
+
+// Import Actions and Selectors
+import * as CustomerActions from '../store/customer.actions';
+import { 
+  selectAllCustomers, 
+  selectIsLoadingList 
+} from '../store/customer.selectors';
 import { Customer } from '../../../api/customer.model';
 
 @Component({
@@ -13,33 +20,24 @@ import { Customer } from '../../../api/customer.model';
 })
 export class CustomerList implements OnInit {
 
-  private customerService = inject(CustomerService);
-  customers = signal<Customer[]>([]);
-  isLoading = signal(true);
+  private store = inject(Store);
+
+  // 1. Select Data from Store (No more manual signals!)
+  // 'selectSignal' automatically updates the UI whenever the store changes.
+  customers = this.store.selectSignal(selectAllCustomers);
+  isLoading = this.store.selectSignal(selectIsLoadingList);
 
   ngOnInit() {
-    this.loadCustomers();
-  }
-
-  loadCustomers() {
-    this.isLoading.set(true);
-    this.customerService.getAll().subscribe({
-      next: (data) => {
-        this.customers.set(data);
-        this.isLoading.set(false);
-      },
-      error: () => this.isLoading.set(false)
-    });
+    // 2. Dispatch Action to Load Data
+    // We don't subscribe here. We just say "Go load them."
+    this.store.dispatch(CustomerActions.loadCustomers());
   }
 
   onDelete(customer: Customer) {
     if (confirm(`Delete customer ${customer.name}?`)) {
-      this.customerService.delete(customer.id).subscribe({
-        next: () => {
-          this.customers.update(list => list.filter(c => c.id !== customer.id));
-        },
-        error: (err) => alert('Could not delete customer.')
-      });
+      // 3. Dispatch Delete Action
+      // The Effect handles the API call and the auto-reload
+      this.store.dispatch(CustomerActions.deleteCustomer({ id: customer.id }));
     }
   }
 }
