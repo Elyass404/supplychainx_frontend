@@ -80,5 +80,3 @@ export class CustomerForm implements OnInit {
     }
   }
 }
-
-//comment2
