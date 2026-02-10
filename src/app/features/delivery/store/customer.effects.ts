@@ -12,7 +12,7 @@ export class CustomerEffects {
   private customerService = inject(CustomerService);
   private router = inject(Router);
 
-  // 1. LOAD LIST
+  // LOAD LIST
   // Listens for '[Customer List] Load Customers' -> Calls API -> Returns Success/Failure
   loadCustomers$ = createEffect(() =>
     this.actions$.pipe(
@@ -38,7 +38,7 @@ export class CustomerEffects {
     )
   );
 
-  // 2. DELETE
+  // DELETE
   // Listens for 'Delete Customer' -> Calls API -> Returns Success -> Reloads List
   deleteCustomer$ = createEffect(() =>
     this.actions$.pipe(
@@ -60,7 +60,7 @@ export class CustomerEffects {
     )
   );
 
-  // 3. CREATE
+  // CREATE
   // Listens for 'Create Customer' -> Calls API -> Navigate to List
   createCustomer$ = createEffect(() =>
     this.actions$.pipe(
@@ -84,7 +84,7 @@ export class CustomerEffects {
     { dispatch: false } // No new action is dispatched
   );
 
-  // 4. UPDATE
+  //  UPDATE
   // Listens for 'Update Customer' -> Calls API -> Navigate to List
   updateCustomer$ = createEffect(() =>
     this.actions$.pipe(
